@@ -8,3 +8,5 @@ DS_Store
 *.json
 *.txt
 *.png
+*.xlsx
+*.numbers
