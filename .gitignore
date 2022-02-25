@@ -1,0 +1,9 @@
+*.apk
+PlayStoreTest/
+PlayStore2/
+DS_Store
+*.zip
+*.csv
+*.yaml
+*.json
+*.txt
