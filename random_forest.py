@@ -46,19 +46,22 @@ def evaluate_pred(models, X_test, train_columns, test_columns, appid=[], Y_test=
     # print(r)
     # print(len(X_test))
     # # print(X_test.iloc[380])
+    threshold = 0.38
     for model in models:
-        pred_values = model.predict(X_test)
+        #pred_values = model.predict(X_test)
+        pred_values = model.predict_proba(X_test)
+        predicted = (pred_values [:,1] >= threshold).astype('int')
         if len(Y_test) == 0:
             print("No labels to compare")
             acc_score.append(pred_values)
             continue
-        tpr = recall_score(Y_test, pred_values)   
-        tnr = recall_score(Y_test, pred_values, pos_label = 0) 
+        tpr = recall_score(Y_test, predicted)   
+        tnr = recall_score(Y_test, predicted, pos_label = 0) 
         fpr = 1 - tnr
         fnr = 1 - tpr
         
-        acc = accuracy_score(Y_test , pred_values)
-        print(confusion_matrix(Y_test, pred_values))
+        acc = accuracy_score(Y_test , predicted)
+        print(confusion_matrix(Y_test, predicted))
         acc_score.append(acc)
         p_str = "Accuracy: %f FPR: %f FNR: %f" % (acc, fpr, fnr)
         print(p_str)
@@ -69,6 +72,7 @@ def evaluate_pred(models, X_test, train_columns, test_columns, appid=[], Y_test=
 def random_forest(X, Y, cvol=True, k=5):
     models = []
     acc_score = []
+    threshold = 0.9
     if cvol: 
         kf = KFold(n_splits=k, random_state=None)
         for train_index , test_index in kf.split(X):
@@ -77,8 +81,10 @@ def random_forest(X, Y, cvol=True, k=5):
             model = RandomForestClassifier(n_estimators=100)
             model.fit(X_train,y_train)
             pred_values = model.predict(X_test)
+            # pred_values = model.predict_proba(X_test)
+            # predicted = (pred_values [:,1] >= threshold).astype('int')
             
-            acc = accuracy_score(pred_values , y_test)
+            acc = accuracy_score(y_test , pred_values)
             print("Training: %d", acc)
             acc_score.append(acc)
             models.append(model)
@@ -90,9 +96,9 @@ def random_forest(X, Y, cvol=True, k=5):
     return models, acc_score
 
 def main():
-    train_file = "apks_multilingual_2022_train.csv"
+    train_file = "reduced_apks_multilingual_2022_train.csv"
     X_train, Y_train, train_columns, _ = read_data(train_file)
-    models, _ = random_forest(X_train, Y_train, cvol=False)
+    models, _ = random_forest(X_train, Y_train, cvol=True)
 
     test_file = "apks_multilingual_2022_test.csv"
     X_test, Y_test, test_columns, _ = read_data(test_file)
