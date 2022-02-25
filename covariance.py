@@ -30,7 +30,7 @@ def backwardElimination(x, Y, sl, columns):
     return x, columns
 
 def main():
-    train_file = "apks_multilingual_trial_train.csv"
+    train_file = "apks_multilingual_2022_train.csv"
     X_train, Y_train, train_columns, app_id = read_data(train_file)
     df = pd.DataFrame(X_train, columns = train_columns)
     # Generating the correlation matrix
@@ -87,7 +87,7 @@ def main():
     data['label'] = Y_train
     data['app_id'] = app_id
     print(data.shape)
-    data.to_csv('reduced_apks_multilingual_trial_train.csv', index=False)    
+    data.to_csv('reduced_apks_multilingual_2022_train.csv', index=False)
     
 
 if __name__ == '__main__':

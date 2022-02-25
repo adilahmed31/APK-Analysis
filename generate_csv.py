@@ -160,9 +160,9 @@ def write_csv(output_file, output_data, columns):
 
 
 def main():
-    input_file = "apks_multilingual_trial.yaml"
-    output_file = "apks_multilingual_trial_train.csv"
-    test_file = "apks_multilingual_trial_test.csv"
+    input_file = "apks_multilingual_2022.yaml"
+    output_file = "apks_multilingual_2022_train.csv"
+    test_file = "apks_multilingual_2022_test.csv"
     data = dict()
     offstore = []
     with open(input_file, 'r') as file:

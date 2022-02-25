@@ -90,11 +90,11 @@ def random_forest(X, Y, cvol=True, k=5):
     return models, acc_score
 
 def main():
-    train_file = "apk_dataset_consolidated_train.csv"
+    train_file = "apks_multilingual_2022_train.csv"
     X_train, Y_train, train_columns, _ = read_data(train_file)
     models, _ = random_forest(X_train, Y_train, cvol=False)
 
-    test_file = "apk_dataset_consolidated_test.csv"
+    test_file = "apks_multilingual_2022_test.csv"
     X_test, Y_test, test_columns, _ = read_data(test_file)
     acc_score = evaluate_pred(models, X_test, train_columns, test_columns, Y_test=Y_test)
 

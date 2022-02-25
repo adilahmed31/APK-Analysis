@@ -111,5 +111,5 @@ def generate_yaml(apkFiles,outputFile):
     # print(len(result))
     # apk_files = []
 apk_files = get_apk_lists("/Users/adil/Documents/IPV/APKs/multilingual")
-generate_json_output(apk_files)
-#generate_yaml(apk_files,"apks_multilingual.yaml")
+#generate_json_output(apk_files)
+generate_yaml(apk_files,"apks_multilingual_2022.yaml")
