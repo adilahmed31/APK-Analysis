@@ -1,4 +1,5 @@
 import pandas as pd
+import joblib
 from sklearn.ensemble import RandomForestClassifier # Import Random Forest Classifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split # Import train_test_split function
@@ -46,7 +47,7 @@ def evaluate_pred(models, X_test, train_columns, test_columns, appid=[], Y_test=
     # print(r)
     # print(len(X_test))
     # # print(X_test.iloc[380])
-    threshold = 0.38
+    threshold = 0.3
     for model in models:
         #pred_values = model.predict(X_test)
         pred_values = model.predict_proba(X_test)
@@ -72,7 +73,7 @@ def evaluate_pred(models, X_test, train_columns, test_columns, appid=[], Y_test=
 def random_forest(X, Y, cvol=True, k=5):
     models = []
     acc_score = []
-    threshold = 0.9
+    # threshold = 0.9
     if cvol: 
         kf = KFold(n_splits=k, random_state=None)
         for train_index , test_index in kf.split(X):
@@ -92,32 +93,46 @@ def random_forest(X, Y, cvol=True, k=5):
         model = RandomForestClassifier(n_estimators=100)
         model.fit(X,Y)
         models.append(model)
-    
+
     return models, acc_score
 
-def main():
-    train_file = "reduced_apks_multilingual_2022_train.csv"
+def predict(models,X_test,train_columns,test_columns,Y_test):
+    train_feature = train_columns.intersection(test_columns)
+    dummy_columns = train_columns.difference(test_columns)
+    X_test = X_test[train_feature]
+    X_test = X_test.reindex(X_test.columns.union(dummy_columns, sort=False), axis=1, fill_value=0)
+    X_test = X_test[train_columns]
+    print("Test feature vector length: %d", len(test_columns))
+    print("Intersection: %d", len(train_feature))
+    print("Dummy: %d", len(dummy_columns))
+    # r = X_test.index[np.isnan(X_test).any(1)]
+    # print(r)
+    # print(len(X_test))
+    # # print(X_test.iloc[380])
+    threshold = 0.3
+    for model in models:
+        #pred_values = model.predict(X_test)
+        pred_values = model.predict_proba(X_test)
+        predicted = (pred_values [:,1] >= threshold).astype('int')
+    return predicted
+
+
+def train(file):
+    train_file = file
     X_train, Y_train, train_columns, _ = read_data(train_file)
     models, _ = random_forest(X_train, Y_train, cvol=True)
 
-    test_file = "apks_multilingual_2022_test.csv"
+    # save
+    joblib.dump(models, "./random_forest.joblib")
+    test_file = "apks_multilingual_2020_test.csv"
     X_test, Y_test, test_columns, _ = read_data(test_file)
     acc_score = evaluate_pred(models, X_test, train_columns, test_columns, Y_test=Y_test)
 
-    # tencent_file = "testcorpus_en.csv"
-    # X_tencent, Y_tencent, tencent_columns, tencent_app_id = read_data(tencent_file)
-    # acc_score = evaluate_pred(models, X_tencent, train_columns, tencent_columns, appid=tencent_app_id, Y_test=Y_tencent)
-
-    # apkfab_file = "apkfab.csv"
-    # X_apkfab, Y_apkfab, apkfab_columns, apkfab_app_id = read_data(apkfab_file)
-    # acc_score = evaluate_pred(models, X_apkfab, train_columns, apkfab_columns, appid=apkfab_app_id)
-    # for pred_value in acc_score:
-    #     file = open('apkfab_random.txt', 'w')
-    #     for i in range(len(pred_value)):
-    #         strr = "%f %s\n" % (pred_value[i], apkfab_app_id[i])
-    #         # print(strr)
-    #         file.write(strr)
+    return models, X_test, train_columns, test_columns, Y_test
+ 
 
 if __name__ == '__main__':
-    main()
-    
+    models, X_test, train_columns, test_columns, Y_test = train("reduced_apks_multilingual_2020_train.csv")
+    # load
+    # models = joblib.load("./random_forest.joblib")
+    #predict(models, X_test, train_columns, test_columns, Y_test=Y_test)

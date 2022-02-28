@@ -212,5 +212,5 @@ def generate_csv(inputyaml, outputcsv):
     write_csv(outputcsv, csv_data, columns)
 
 if __name__ == '__main__':
-    #generate_csv("apks_multilingual.yaml", "apks_multilingual.csv")
-    main()
+    generate_csv("apks_multilingual_2022.yaml", "apks_multilingual_2022.csv")
+    #main()

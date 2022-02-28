@@ -4,6 +4,7 @@ import json
 import subprocess
 import yaml
 import copy
+import csv
 import traceback
 from threading import Timer
 
@@ -26,7 +27,8 @@ def get_permission_data(apkfile):
 def save_code_data(apkfile):
     apkfile = str(os.path.abspath(apkfile))
     outfile = apkfile.rsplit('/',1)[-1].rsplit('.',1)[0] + ".json"
-    outdir = apkfile.rsplit('/',2)[0] + "/output/"
+    #outdir = apkfile.rsplit('/',2)[0] + "/output/"
+    outdir = "/Users/adil/Documents/IPV/APKs/output/"
     fileName = outdir + outfile
     if os.path.exists(fileName):
         print(fileName + " already exists. Skipping. \n")
@@ -50,6 +52,11 @@ def get_apk_lists(directory):
     result = [y for x in os.walk(directory) for y in glob(os.path.join(x[0], '*.apk'))]
     return result
 
+def get_output_data_2022(app):
+    inputfile = "/Users/adil/Documents/IPV/APKs/output-2022/" + app + ".json"
+    with open(inputfile, 'r') as file:
+        data = json.loads(file.read())
+    return data
 
 def generate_json_output(apkFiles):
     for apk in apkFiles:
@@ -61,7 +68,8 @@ def generate_yaml(apkFiles,outputFile):
     outdir = outputFile
     for apk in apkFiles:
         try:  
-            result=get_code_data(apk)
+            #result=get_code_data(apk)
+            result = get_output_data_2022(apk)
             package = result["manifest_properties"]["package_name"]
             permission = result["manifest_properties"]["permissions"]
             providers = [x.strip('\'') for x in result["manifest_properties"]["providers"]]
@@ -110,6 +118,14 @@ def generate_yaml(apkFiles,outputFile):
 
     # print(len(result))
     # apk_files = []
-apk_files = get_apk_lists("/Users/adil/Documents/IPV/APKs/multilingual")
+#apk_files = get_apk_lists("/Users/adil/Documents/IPV/APKs/multilingual/2022/")
+appsfile_2022 = "/Users/adil/Documents/IPV/Multilingual/all_apps_2022.csv"
+apps = list()
+with open(appsfile_2022,mode='r',encoding='utf-8') as inp:
+        reader = csv.DictReader(inp)
+        for row in reader:
+            apps.append(row["appId"])
+
+
 #generate_json_output(apk_files)
-generate_yaml(apk_files,"apks_multilingual_2022.yaml")
+generate_yaml(apps,"apks_multilingual_2022.yaml")

@@ -40,12 +40,13 @@ def downloadRandomSample(inputFile):
     with open(inputFile,mode='r',encoding='utf-8') as inp:
         reader = csv.DictReader(inp)
         for row in reader:
-            apps.append(row["\ufeffappId"])
+            #print(row)
+            apps.append(row["appId"])
     for app in apps:
         try:
             if (count >= 500):
                 break
-            with open('downloadedApps.txt','r') as f:
+            with open('downloaded.txt','r') as f:
                 if app in f.read():
                     continue
             f.close()
@@ -61,5 +62,5 @@ def downloadRandomSample(inputFile):
         except:
             continue
 
-downloadRandomSample("/Users/adil/Documents/IPV/Multilingual/apps_multilingual_benign.csv")
+downloadRandomSample("/Users/adil/Documents/IPV/Multilingual/all_apps_2022.csv")
 #downloadApk("com.eset.parental")
